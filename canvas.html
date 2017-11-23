@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>canvas</title>
+		<style>
+			#canvas{
+				background:#888;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="color" id="color">
+		<canvas id="canvas" width="800" height="600">
+			<p>您的浏览器不支持canvas，请下载最新版浏览器</p>
+		</canvas>
+	</body>
+	<script>
+		let can = document.getElementById("canvas");
+		let ca = can.getContext("2d");
+
+		//正方形
+		ca.moveTo(10,10);
+		ca.lineTo(200,10);
+		ca.lineTo(200,100);
+		ca.lineTo(10,100);
+		ca.closePath();
+		ca.strokeStyle = "blue";//边框颜色
+		ca.stroke();//绘画边框
+		ca.fillStyle = "red";//背景颜色
+		ca.fill();//绘画背景
+		ca.beginPath();//绘画完毕--等价于提前初始化画布
+
+		//三角形
+		ca.moveTo(210,10);
+		ca.lineTo(310,10);
+		ca.lineTo(310,100);
+		ca.closePath();
+		ca.strokeStyle = "pink";//绘制边框颜色
+		ca.stroke();//绘画边框
+		ca.fillStyle = "orange";//绘制背景颜色
+		ca.fill();//绘画背景
+		ca.beginPath();//绘画完毕--等价于提前初始化画布
+
+		//快速画出矩形和正方形
+		ca.rect(340,10,100,200);
+		ca.strokeStyle = "green";
+		ca.stroke();
+		ca.beginPath();
+		ca.rect(450,10,100,200);
+		ca.strokeStyle = "pink";
+		ca.stroke();
+		ca.beginPath();
+		//ca.clearRect(20,20,100,50);//清空一个矩形
+
+		//做一个类似于画板一样的效果鼠标可以绘画
+		let oColor = document.getElementById("color");
+		let color = "black";//开始默认颜色为黑色
+		oColor.onchange = function(){
+			color = this.value;
+		}
+		let letX,letY;//用来盛放鼠标距离上一个点的x，y值
+		can.onmousedown = function(e){
+			letX = e.offsetX;
+			letY = e.offsetY;
+			can.onmousemove = function(e){
+				//每次移动到新的点先初始化
+				ca.beginPath();
+				//设置绘制初始值
+				ca.moveTo(letX,letY);
+				//目标点
+				ca.lineTo(e.offsetX,e.offsetY);
+				//赋新值
+				letX = e.offsetX;
+				letY = e.offsetY;
+				//绘制边框颜色
+				ca.strokeStyle = color;
+				//绘制
+				ca.stroke();
+			}
+			can.onmouseup = function(){
+				//清空按下和移动事件
+				can.onmousemove = null;
+				can.onmouseup = null;
+			}
+		}
+
+		//圆
+		//角度与弧度的换算
+		//360度 = 2*Math.PI，1度 = Math.PT/180,1弧度=180/Math.PI
+		ca.arc(600,60,40,0,2*Math.PI,true);//参数分别是，圆心x，y，半径r，起始角度，完结角度，是否逆时针(布尔值)
+		ca.strokeStyle = "#562a2a";
+		ca.stroke();
+		ca.beginPath();
+
+		//画一个饼图的一部分--扇形
+		//角度
+		function angle(n){
+			return n*Math.PI/180;
+		}
+		//弧度
+		function radian(n){
+			return n*180/Math.PI;
+		}
+		let ax = 80;//起始x点
+		let ay = 350;//起始y点
+		let r = 150;//半径
+		let anStart = 30;//起始角度
+		let anEnd = 70;//结束角度
+		let x = ax + r*Math.sin(angle(anStart));
+		let y = ay - r*Math.cos(angle(anStart));
+		//1.起点
+		ca.moveTo(ax,ay);
+		//2.一条线
+		ca.lineTo(x,y);
+		//3.一个弧度
+		ca.arc(ax,ay,r,angle(anStart-90),angle(anEnd-90),false);
+		//4.闭合路径完成绘制
+		ca.closePath();
+		ca.strokeStyle = "red";
+		ca.stroke();
+		ca.beginPath();
+
+		//画一个饼图
+		let ax2 = 300;//起始x点
+		let ay2 = 400;//起始y点
+		let r2 = 100;//半径
+		function pie(anStart,anEnd,color){
+			let x = ax2 + r2*Math.sin(angle(anStart));
+			let y = ay2 - r2*Math.cos(angle(anStart));
+			//1.起点
+			ca.moveTo(ax2,ay2);
+			//2.一条线
+			ca.lineTo(x,y);
+			//3.一个弧度
+			ca.arc(ax2,ay2,r2,angle(anStart-90),angle(anEnd-90),false);
+			//4.闭合路径完成绘制
+			ca.closePath();
+			ca.fillStyle = color;
+			ca.fill();
+			ca.beginPath();
+		}
+		//1.数据
+        let data=[236, 233, 554, 651];
+        let colors=['#CF0', '#C0F', '#CFC', '#0CF'];
+        //2.总和
+        let sum=data.reduce((sum,item,index)=>sum+item);
+        //3.数据占比->角度占比
+        let angs=data.map(item=>360*item/sum);
+        //4.画——以上一个pie的结束角作为，下一个pie的开始
+        let last=0;
+        angs.forEach((ang, index)=>{
+          pie(last, last+ang, colors[index]);
+          last+=ang;
+        });
+
+		//字体
+		ca.font='100px 宋体';
+        ca.strokeText('呵呵呵', 400, 400);
+        ca.fillText('呵呵呵', 400, 500);
+	</script>
+</html>
