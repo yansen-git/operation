@@ -1,10 +1,10 @@
 #em
 ---
-- font-size大小是相对于父元素来说;
+- 大小相对于它本身的font-size;
 
 #rem
 ---
-- element元素的font-size是相对于根元素来说;
+- 相对于根元素来说;
 - 如：
 -	```style
 		html{
